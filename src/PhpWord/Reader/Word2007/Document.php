@@ -46,15 +46,33 @@ class Document extends AbstractPart
         $this->phpWord = $phpWord;
         $xmlReader = new XMLReader();
         $xmlReader->getDomFromZip($this->docFile, $this->xmlFile);
-        $readMethods = ['w:p' => 'readWPNode', 'w:tbl' => 'readTable', 'w:sectPr' => 'readWSectPrNode'];
-
         $nodes = $xmlReader->getElements('w:body/*');
         if ($nodes->length > 0) {
             $section = $this->phpWord->addSection();
             foreach ($nodes as $node) {
-                if (isset($readMethods[$node->nodeName])) {
-                    $readMethod = $readMethods[$node->nodeName];
-                    $this->$readMethod($xmlReader, $node, $section);
+                $this->readNode($phpWord, $xmlReader, $node, $section);
+            }
+        }
+    }
+
+    private function readNode(PhpWord $phpWord, XMLReader $xmlReader, \DOMNode $node, Section $section): void
+    {
+        $readMethods = ['w:p' => 'readWPNode', 'w:tbl' => 'readTable', 'w:sectPr' => 'readWSectPrNode'];
+        if (isset($readMethods[$node->nodeName])) {
+            $readMethod = $readMethods[$node->nodeName];
+            $this->$readMethod($xmlReader, $node, $section);
+        } elseif ($node->nodeName === 'w:sdt') {
+            $nodes = $xmlReader->getElements('w:sdtContent/*', $node);
+            if ($nodes->length > 0) {
+                foreach ($nodes as $subNode) {
+                    $this->readNode($phpWord, $xmlReader, $subNode, $section);
+                }
+            }
+        } elseif ($node->nodeName === 'w:sdtContent') {
+            $nodes = $xmlReader->getElements('*', $node);
+            if ($nodes->length > 0) {
+                foreach ($nodes as $subNode) {
+                    $this->readNode($phpWord, $xmlReader, $subNode, $section);
                 }
             }
         }
