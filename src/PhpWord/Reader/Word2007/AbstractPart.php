@@ -174,7 +174,7 @@ abstract class AbstractPart
             // @todo Evaluate if a generic relative './/w:r' would be better fitting here.
             $nodes = $xmlReader->getElements('w:r|w:sdt/w:sdtContent/w:r|w:hyperlink|w:sdt/w:sdtContent/w:hyperlink', $domNode);
             if ($nodes->length === 1) {
-                $textContent = htmlspecialchars($xmlReader->getValue('w:t', $nodes->item(0)), ENT_QUOTES, 'UTF-8');
+                $textContent = htmlspecialchars($xmlReader->getValue('w:t|w:sdt/w:sdtContent/w:t', $nodes->item(0)), ENT_QUOTES, 'UTF-8');
             } else {
                 $textContent = new TextRun($paragraphStyle);
                 foreach ($nodes as $node) {
@@ -184,7 +184,12 @@ abstract class AbstractPart
             $parent->addTitle($textContent, $headingDepth);
         } else {
             // Text and TextRun
-            $textRunContainers = $xmlReader->countElements('w:r|w:ins|w:del|w:hyperlink|w:smartTag', $domNode);
+            $textRunContainers = $xmlReader->countElements(
+                'w:r|w:ins|w:del|w:hyperlink|w:smartTag'
+                . '|w:sdt/w:sdtContent/w:r|w:sdt/w:sdtContent/w:ins|w:sdt/w:sdtContent/w:del'
+                . '|w:sdt/w:sdtContent/w:hyperlink|w:sdt/w:sdtContent/w:smartTag'
+                , $domNode
+            );
             if (0 === $textRunContainers) {
                 $parent->addTextBreak(null, $paragraphStyle);
             } else {
@@ -238,7 +243,7 @@ abstract class AbstractPart
      */
     protected function readRun(XMLReader $xmlReader, DOMElement $domNode, $parent, $docPart, $paragraphStyle = null): void
     {
-        if (in_array($domNode->nodeName, ['w:ins', 'w:del', 'w:smartTag', 'w:hyperlink'])) {
+        if (in_array($domNode->nodeName, ['w:ins', 'w:del', 'w:smartTag', 'w:hyperlink', 'w:sdt', 'w:sdtContent'])) {
             $nodes = $xmlReader->getElements('*', $domNode);
             foreach ($nodes as $node) {
                 $this->readRun($xmlReader, $node, $parent, $docPart, $paragraphStyle);
