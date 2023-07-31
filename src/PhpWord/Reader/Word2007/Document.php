@@ -62,14 +62,14 @@ class Document extends AbstractPart
         if (isset($readMethods[$node->nodeName])) {
             $readMethod = $readMethods[$node->nodeName];
             $this->$readMethod($xmlReader, $node, $section);
-        } elseif ($node->nodeName === 'w:sdt') {
+        } elseif ($node->nodeName === 'w:sdt' && $node instanceof DOMElement) {
             $nodes = $xmlReader->getElements('w:sdtContent/*', $node);
             if ($nodes->length > 0) {
                 foreach ($nodes as $subNode) {
                     $this->readNode($phpWord, $xmlReader, $subNode, $section);
                 }
             }
-        } elseif ($node->nodeName === 'w:sdtContent') {
+        } elseif ($node->nodeName === 'w:sdtContent' && $node instanceof DOMElement) {
             $nodes = $xmlReader->getElements('*', $node);
             if ($nodes->length > 0) {
                 foreach ($nodes as $subNode) {
