@@ -187,8 +187,8 @@ abstract class AbstractPart
             $textRunContainers = $xmlReader->countElements(
                 'w:r|w:ins|w:del|w:hyperlink|w:smartTag'
                 . '|w:sdt/w:sdtContent/w:r|w:sdt/w:sdtContent/w:ins|w:sdt/w:sdtContent/w:del'
-                . '|w:sdt/w:sdtContent/w:hyperlink|w:sdt/w:sdtContent/w:smartTag'
-                , $domNode
+                . '|w:sdt/w:sdtContent/w:hyperlink|w:sdt/w:sdtContent/w:smartTag',
+                $domNode
             );
             if (0 === $textRunContainers) {
                 $parent->addTextBreak(null, $paragraphStyle);

@@ -18,6 +18,7 @@
 namespace PhpOffice\PhpWord\Reader\Word2007;
 
 use DOMElement;
+use DOMNode;
 use PhpOffice\PhpWord\Element\Section;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\Shared\XMLReader;
@@ -55,7 +56,7 @@ class Document extends AbstractPart
         }
     }
 
-    private function readNode(PhpWord $phpWord, XMLReader $xmlReader, \DOMNode $node, Section $section): void
+    private function readNode(PhpWord $phpWord, XMLReader $xmlReader, DOMNode $node, Section $section): void
     {
         $readMethods = ['w:p' => 'readWPNode', 'w:tbl' => 'readTable', 'w:sectPr' => 'readWSectPrNode'];
         if (isset($readMethods[$node->nodeName])) {
