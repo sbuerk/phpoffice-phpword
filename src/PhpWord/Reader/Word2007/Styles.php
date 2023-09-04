@@ -89,10 +89,12 @@ class Styles extends AbstractPart
                         } else {
                             if (empty($fontStyle)) {
                                 if (is_array($paragraphStyle)) {
-                                    $phpWord->addParagraphStyle($name, $paragraphStyle);
+                                    $paragraphStyleName = $phpWord->addParagraphStyle($name, $paragraphStyle)->getStyleName();
+                                    Style::addStyleNameAlias($alias, $paragraphStyleName);
                                 }
                             } else {
-                                $phpWord->addFontStyle($name, $fontStyle, $paragraphStyle);
+                                $fontStyleName = $phpWord->addFontStyle($name, $fontStyle, $paragraphStyle)->getStyleName();
+                                Style::addStyleNameAlias($alias, $fontStyleName);
                             }
                         }
 
@@ -100,14 +102,16 @@ class Styles extends AbstractPart
                     case 'character':
                         $fontStyle = $this->readFontStyle($xmlReader, $node);
                         if (!empty($fontStyle)) {
-                            $phpWord->addFontStyle($name, $fontStyle);
+                            $fontStyleName = $phpWord->addFontStyle($name, $fontStyle)->getStyleName();
+                            Style::addStyleNameAlias($alias, $fontStyleName);
                         }
 
                         break;
                     case 'table':
                         $tStyle = $this->readTableStyle($xmlReader, $node);
                         if (!empty($tStyle)) {
-                            $phpWord->addTableStyle($name, $tStyle);
+                            $tableStyleName = $phpWord->addTableStyle($name, $tStyle)->getStyleName();
+                            Style::addStyleNameAlias($alias, $tableStyleName);
                         }
 
                         break;
